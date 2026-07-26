@@ -10,9 +10,10 @@
 
 每个 run 会：
   1. 计算 fixture 内容哈希（TOKEN_EVAL §8 算法）
-  2. 先跑 doc-memory reindex（保证索引新鲜，命令计入 raw log）
-  3. 按任务卡的冻结参数执行 scripted_path，统计实际加载的文档字节
-  4. 写报告 fixtures/eval/reports/<runner>-<YYYYMMDD>-<task_id>.md
+  2. 复制 fixture 到隔离临时目录，再跑 doc-memory reindex
+  3. 按任务卡的冻结 top_k 执行 scripted_path，统计实际加载的文档字节
+  4. 任一 CLI 子命令失败即闭锁，不生成误导性成功报告
+  5. 写报告 fixtures/eval/reports/<runner>-<YYYYMMDD>-<task_id>.md
 """
 import argparse
 import hashlib
@@ -20,8 +21,10 @@ import json
 import math
 import os
 import re
+import shutil
 import subprocess
 import sys
+import tempfile
 from datetime import datetime, timezone, timedelta
 
 REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -98,11 +101,21 @@ def parse_task_card(task_id: str) -> dict:
 def run_cli(args, fixture, raw_log):
     cmd = [sys.executable, DOC_MEMORY, "--root", fixture] + args
     proc = subprocess.run(cmd, capture_output=True)
-    raw_log.append("$ " + " ".join(cmd).replace(REPO_ROOT + os.sep, ""))
+    display_command = (
+        " ".join(cmd)
+        .replace(REPO_ROOT + os.sep, "")
+        .replace(fixture, "fixtures/demo_project")
+    )
+    raw_log.append("$ " + display_command)
     raw_log.append(proc.stdout.decode("utf-8", "replace").rstrip("\n"))
     if proc.stderr:
         raw_log.append("[stderr] " + proc.stderr.decode("utf-8", "replace").rstrip("\n"))
     raw_log.append(f"[exit={proc.returncode}]")
+    if proc.returncode != 0:
+        detail = proc.stderr.decode("utf-8", "replace").strip()
+        raise RuntimeError(
+            f"doc-memory 子命令失败（exit={proc.returncode}）: "
+            f"{' '.join(args)}{': ' + detail if detail else ''}")
     return proc.stdout
 
 
@@ -116,24 +129,24 @@ def shard_paths_from_output(stdout: bytes) -> list:
     return paths
 
 
-def measure(task_id: str, runner: str) -> dict:
+def _measure_on_fixture(task_id: str, runner: str, fixture: str) -> dict:
     card = parse_task_card(task_id)
     raw_log = []
     loaded = []          # [(label, rel_path_or_None, bytes)]  实际进入上下文的文档字节
-    fh = fixture_hash(FIXTURE)
+    fh = fixture_hash(fixture)
     fixture_id = f"demo_project@{fh[:16]}"
 
     # step 0: reindex（保证 INDEX 新鲜）
-    run_cli(["reindex"], FIXTURE, raw_log)
+    run_cli(["reindex"], fixture, raw_log)
 
     # baseline：全部碎片完整文件（TOKEN_EVAL §4.1）
     baseline_bytes = 0
     baseline_mode = card.get("baseline_mode", "all_shards")
     if baseline_mode == "all_shards":
-        for _rel, full in list_shard_files(FIXTURE):
+        for _rel, full in list_shard_files(fixture):
             baseline_bytes += len(normalized_file_bytes(full))
 
-    index_md = os.path.join(FIXTURE, "docs", "INDEX.md")
+    index_md = os.path.join(fixture, "docs", "INDEX.md")
 
     if task_id == "T-l0-budget":
         data = normalized_file_bytes(index_md)
@@ -146,13 +159,17 @@ def measure(task_id: str, runner: str) -> dict:
         data = normalized_file_bytes(index_md)
         loaded.append(("L0 INDEX.md", "docs/INDEX.md", len(data)))
         atlas_bytes = len(data)
-        out = run_cli(["search", card["query"]], FIXTURE, raw_log)
+        out = run_cli(
+            ["search", card["query"], "--limit", str(int(card["top_k"]))],
+            fixture,
+            raw_log,
+        )
         loaded.append(("search stdout", None, len(out)))
         atlas_bytes += len(out)
         hits = shard_paths_from_output(out)[: int(card["top_k"])]
         body_all = ""
         for rel in hits:
-            b = normalized_file_bytes(os.path.join(FIXTURE, rel))
+            b = normalized_file_bytes(os.path.join(fixture, rel))
             loaded.append(("shard", rel, len(b)))
             atlas_bytes += len(b)
             body_all += b.decode("utf-8", "replace")
@@ -161,7 +178,7 @@ def measure(task_id: str, runner: str) -> dict:
                         if probe_ok else f"未找到 {card['probe_expected']}")
 
     elif task_id == "T-affected-auth":
-        out = run_cli(["affected", card["affected_path"]], FIXTURE, raw_log)
+        out = run_cli(["affected", card["affected_path"]], fixture, raw_log)
         loaded.append(("affected stdout", None, len(out)))
         atlas_bytes = len(out)
         hits = shard_paths_from_output(out)
@@ -169,7 +186,7 @@ def measure(task_id: str, runner: str) -> dict:
             hits = hits[: int(card["top_k"])]
         body_all = ""
         for rel in hits:
-            b = normalized_file_bytes(os.path.join(FIXTURE, rel))
+            b = normalized_file_bytes(os.path.join(fixture, rel))
             loaded.append(("shard", rel, len(b)))
             atlas_bytes += len(b)
             body_all += b.decode("utf-8", "replace")
@@ -196,6 +213,14 @@ def measure(task_id: str, runner: str) -> dict:
         "probe_ok": probe_ok, "probe_answer": probe_answer,
         "verdicts": verdicts, "runner": runner, "task_id": task_id,
     }
+
+
+def measure(task_id: str, runner: str) -> dict:
+    """Run against an isolated fixture copy so evaluation never dirties source files."""
+    with tempfile.TemporaryDirectory(prefix="docs-as-memory-eval-") as temp_root:
+        fixture = os.path.join(temp_root, "demo_project")
+        shutil.copytree(FIXTURE, fixture)
+        return _measure_on_fixture(task_id, runner, fixture)
 
 
 def render_report(r: dict) -> str:
@@ -249,12 +274,21 @@ def render_report(r: dict) -> str:
 def main():
     p = argparse.ArgumentParser(
         description="Docs as Memory token 量尺（method=normalized_utf8_bytes/4）")
-    p.add_argument("--runner", required=True, choices=["kimi", "grok"])
+    p.add_argument(
+        "--runner",
+        required=True,
+        choices=["kimi", "grok", "codex"],
+        help="kimi/grok 用于正式双端验收；codex 仅用于工程回归",
+    )
     p.add_argument("--task", required=True)
     p.add_argument("--out", default=REPORTS_DIR)
     args = p.parse_args()
 
-    r = measure(args.task, args.runner)
+    try:
+        r = measure(args.task, args.runner)
+    except RuntimeError as exc:
+        print(f"error: {exc}", file=sys.stderr)
+        return 1
     report = render_report(r)
     os.makedirs(args.out, exist_ok=True)
     date_str = datetime.now().strftime("%Y%m%d")
@@ -272,7 +306,8 @@ def main():
         "probe_pass": r["probe_ok"],
         "verdicts": r["verdicts"],
     }, ensure_ascii=False, indent=2))
+    return 0
 
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main())

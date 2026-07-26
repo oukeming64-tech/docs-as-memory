@@ -9,7 +9,7 @@
 一个本地、零第三方依赖的 agent 技能：让 AI 面对文档比代码还多的项目时，
 先准确定位，再核对事实，只改相关文档，最后用可复现证据封口。
 
-> 当前版本：`0.1.0` public alpha。适合真实项目试用，但尚未承诺稳定 API。
+> 当前版本：`0.1.1` public alpha。适合真实项目试用，但尚未承诺稳定 API。
 
 ## 为什么做它
 
@@ -86,8 +86,9 @@ python3 ~/.codex/skills/doc-memory/scripts/install_project.py \
 
 ```bash
 python3 doc_memory.py overview
-python3 doc_memory.py search "鉴权 token" --limit 2
+python3 doc_memory.py search "鉴权 token"             # 默认 top-2
 python3 doc_memory.py search "旧规格" --include-cold
+python3 doc_memory.py search "审计" --limit 0          # 明确需要时才输出全部命中
 python3 doc_memory.py affected src/auth/
 python3 doc_memory.py reindex
 python3 doc_memory.py validate
@@ -134,7 +135,8 @@ python3 doc_memory.py validate
 - 是确定性词法检索，不是 embedding 语义检索；
 - `code_paths` 需要人工维护，`affected` 才能准确反查；
 - 只有几篇短文档时，建立索引的收益有限；
-- 当前真实文档报告由 Codex 独立运行，正式 Kimi/Grok 双端重跑仍在公开路线图中。
+- v0.1.1 的 Codex 工程回归已经通过；修复后的正式 Kimi/Grok 双端重跑仍在
+  公开路线图中，Codex 回归不冒充双端验收。
 
 ## 仓库结构
 

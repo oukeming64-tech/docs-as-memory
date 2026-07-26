@@ -53,9 +53,10 @@ python3 ~/.codex/skills/doc-memory/scripts/install_project.py \
 
 ```bash
 python3 ~/.codex/skills/doc-memory/scripts/doc_memory.py \
-  --root /path/to/project search "关键词" --limit 2
+  --root /path/to/project search "关键词"
 ```
 
+`search` 默认只返回 top-2；只有明确需要全部命中时才传 `--limit 0`。
 若项目还没有 `docs/shards`，请先征得用户同意再安装/迁移，不要在只读问答中擅自写入。
 
 ## 升级

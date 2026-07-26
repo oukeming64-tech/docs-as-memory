@@ -1,7 +1,8 @@
 # Token 验收规则（防自欺）
 
-- 版本：v1.1（v1 数字兼容；补充跨平台换行规范）
-- 状态：**历史 Kimi/Grok 双跑已完成；当前检索核心的正式双端重跑仍是公开路线图项目**
+- 版本：v1.2（量尺公式不变；scripted_path 明确按任务卡 top_k 限制 search 输出）
+- 状态：**修复前 Kimi/Grok 双跑复现 AC-1 回归；v0.1.1 Codex 工程回归通过，
+  修复后的正式 Kimi/Grok 双端重跑仍是公开路线图项目**
 - 适用：AC-1、AC-5 及一切「省 token」宣称
 - 原则：涉及 token 的数字 **禁止单方口述**；必须 **同一套量尺 + 双人各跑 + 留原始输出**
 
@@ -34,6 +35,9 @@ token 相关结论最容易：
 `Run-K` 与 `Run-G` **都**对同一 `fixture_id` + 同一 `task_id` 给出可复现数字，且 **相对误差 ≤10%**（见 §6）；两边都达标才算 AC 过。
 
 一方未跑 = **该 AC 未完成**，不得在 STATUS 写「已通过」。
+
+Codex 可用 `runner=codex` 生成工程回归报告，用于在提交前发现退化；它不进入
+Kimi/Grok 双端一致性计算，也不能单独把 token AC 判为正式通过。
 
 ---
 
@@ -118,7 +122,10 @@ est_tokens = ceil(normalized_utf8_byte_length / 4)
 
 `T-l0-budget` **不经过模型**也可：直接对 `INDEX.md` 跑量尺脚本 → 仍须 Kimi、Grok **各自执行脚本** 并交日志（防一方改夹具未重跑）。
 
-`T-auth-locate` 若用 agent 实机：双方用 **同一 prompt、同一 fixture 提交哈希**；若暂不用 agent、用「规范路径模拟」（只允许 INDEX + search 结果 top-k + 打开 top-k 正文），须在报告写明 `mode=scripted_path`，且双方 mode 必须相同。
+`T-auth-locate` 若用 agent 实机：双方用 **同一 prompt、同一 fixture 提交哈希**；
+若暂不用 agent、用「规范路径模拟」（只允许 INDEX +
+`search --limit <top_k>` 输出 + 打开 top-k 正文），须在报告写明
+`mode=scripted_path`，且双方 mode 必须相同。
 
 ---
 
@@ -143,7 +150,8 @@ est_tokens = ceil(normalized_utf8_byte_length / 4)
 fixtures/eval/reports/<runner>-<YYYYMMDD>-<task_id>.md
 ```
 
-`runner` ∈ `kimi` | `grok`
+正式双端报告的 `runner` ∈ `kimi` | `grok`。工程回归可用 `codex`，但必须在
+结论中明确“不计入正式双端验收”。
 
 报告模板：
 
@@ -242,7 +250,10 @@ python3 tools/token_measure.py --runner kimi --task T-auth-locate
 - [x] 历史 SUMMARY 双过
 - [x] Codex 独立真实副本回归（59 篇，见
   `fixtures/eval/reports/real-docs-benchmark-2026-07-26.md`）
-- [ ] 当前 public alpha 检索核心的 Kimi/Grok 正式双端重跑
+- [x] 修复前 public alpha 的 Kimi/Grok 双跑（同夹具、数字一致，AC-1
+  `0.3266` 失败）
+- [x] v0.1.1 Codex 工程回归（AC-1 `0.2555`，探针通过）
+- [ ] v0.1.1 修复后的 Kimi/Grok 正式双端重跑
 
-历史报告证明的是当时的 CLI/fixture 提交，不能覆盖当前行为。独立本地回归用于工程
-硬化和产品判断，不冒充本文件要求的双人 token 验收。
+历史与修复前报告证明的是当时的 CLI/fixture 提交，不能覆盖当前行为。Codex
+工程回归用于工程硬化和产品判断，不冒充本文件要求的双人 token 验收。

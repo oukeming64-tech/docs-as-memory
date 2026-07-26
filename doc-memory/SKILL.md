@@ -63,6 +63,7 @@ python3 doc_memory.py affected path/to/changed/code
 ```
 
 - 只打开 **命中的 1～2 个** `docs/shards/**/*.md`。
+- `search` 默认只返回 top-2；只有明确需要完整命中清单时才用 `--limit 0`。
 - `history/cold/archive` 冷域默认不检索；用户点名或 hot 域无答案时才加
   `--include-cold`，并说明这是回退。
 - 搜不到：换中英文关键词；再不行，在 INDEX 里按 domain 人工点一篇，仍不要整域灌入。

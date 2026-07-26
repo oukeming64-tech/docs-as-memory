@@ -10,7 +10,7 @@ doc-memory — 文档碎片索引 CLI（零第三方依赖，Python >= 3.9，仅
 - 索引新鲜度用内容哈希（Markdown 换行规范为 LF 后，sha256 串联
   relpath + b'\\n' + normalized_bytes，稳定排序）；不用 mtime。
 - search 排序：keyword 精确命中 x3 + title 字面 x2 + summary/body/path 字面 x1，
-  平分按路径字典序；大小写不敏感；默认排除 history/cold 冷域。
+  平分按路径字典序；大小写不敏感；默认排除 history/cold 冷域并只返回 top-2。
 - affected：查询路径与 code_path 任一方是另一方前缀即命中（尾斜杠归一化）。
 - 读取类命令遇到损坏碎片默认失败闭锁；显式 --allow-partial 才可降级。
 - 退出码：0 成功/仅警告；1 数据/校验错误；2 用法/路径安全错误。
@@ -43,7 +43,7 @@ def configure_utf8_stdio() -> None:
 
 configure_utf8_stdio()
 
-VERSION = "0.1.0"
+VERSION = "0.1.1"
 SCHEMA_VERSION = 2
 SHARD_ROOT = os.path.join("docs", "shards")
 INDEX_MD = os.path.join("docs", "INDEX.md")
@@ -56,6 +56,7 @@ SUMMARY_LIMIT_CJK = 80
 SUMMARY_LIMIT_LATIN = 160
 STALE_DAYS = 90
 L0_BUDGET = 1500
+DEFAULT_SEARCH_LIMIT = 2
 COLD_DOMAINS = frozenset({"history", "cold", "archive", "archives"})
 DEFAULT_MIGRATE_EXCLUDES = (
     ".git/**",
@@ -1247,7 +1248,9 @@ def main(argv=None) -> int:
         "search", help="keywords 优先 + title/summary/body/path 字面检索")
     sp.add_argument("query")
     sp.add_argument("--json", action="store_true")
-    sp.add_argument("--limit", type=int, default=0, help="最多输出 N 条（0=不限）")
+    sp.add_argument(
+        "--limit", type=int, default=DEFAULT_SEARCH_LIMIT,
+        help=f"最多输出 N 条（默认 {DEFAULT_SEARCH_LIMIT}；0=不限）")
     sp.add_argument("--include-cold", action="store_true",
                     help="包含 domain/path 为 history/cold/archive 的冷域")
     sp.add_argument("--allow-partial", action="store_true",
