@@ -22,3 +22,8 @@ First public alpha release.
 - Lexical search only; no embeddings or semantic database.
 - `code_paths` mappings require human review.
 - Public alpha API and file formats may still change.
+
+### Fixed
+
+- Force UTF-8 CLI and installer output on Windows locales that otherwise default
+  to legacy encodings such as cp1252.

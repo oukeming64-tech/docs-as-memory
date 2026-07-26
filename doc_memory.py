@@ -28,6 +28,21 @@ import sys
 import tempfile
 from datetime import date, datetime
 
+
+def configure_utf8_stdio() -> None:
+    """Keep human-readable output usable on narrow Windows console locales."""
+    for stream in (sys.stdout, sys.stderr):
+        reconfigure = getattr(stream, "reconfigure", None)
+        if reconfigure is None:
+            continue
+        try:
+            reconfigure(encoding="utf-8", errors="backslashreplace")
+        except (OSError, ValueError):
+            pass
+
+
+configure_utf8_stdio()
+
 VERSION = "0.1.0"
 SCHEMA_VERSION = 1
 SHARD_ROOT = os.path.join("docs", "shards")

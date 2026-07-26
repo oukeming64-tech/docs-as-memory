@@ -40,7 +40,8 @@ class DocMemoryTests(unittest.TestCase):
             *arguments,
         ]
         return subprocess.run(
-            command, text=True, capture_output=True, timeout=20, check=False)
+            command, encoding="utf-8", capture_output=True,
+            timeout=20, check=False)
 
     def init(self):
         completed = self.run_cli("init")
@@ -74,10 +75,21 @@ class DocMemoryTests(unittest.TestCase):
     def test_version_is_public_release_version(self):
         completed = subprocess.run(
             [sys.executable, str(CLI), "--version"],
-            text=True, capture_output=True, timeout=20, check=False,
+            encoding="utf-8", capture_output=True, timeout=20, check=False,
         )
         self.assertEqual(completed.returncode, 0, completed.stderr)
         self.assertEqual(completed.stdout.strip(), "doc-memory 0.1.0")
+
+    def test_cli_forces_utf8_output_on_narrow_locale(self):
+        environment = os.environ.copy()
+        environment["PYTHONIOENCODING"] = "cp1252"
+        completed = subprocess.run(
+            [sys.executable, str(CLI), "--root", str(self.root), "init"],
+            encoding="utf-8", capture_output=True, timeout=20, check=False,
+            env=environment,
+        )
+        self.assertEqual(completed.returncode, 0, completed.stderr)
+        self.assertIn("reindex 完成", completed.stdout)
 
     def test_overview_fails_closed_when_index_is_stale(self):
         self.init()
@@ -275,7 +287,7 @@ class DocMemoryTests(unittest.TestCase):
         dry_run = subprocess.run(
             [sys.executable, str(INSTALLER), "--root", str(self.root),
              "--with-agents-snippet"],
-            text=True, capture_output=True, timeout=20, check=False,
+            encoding="utf-8", capture_output=True, timeout=20, check=False,
         )
         self.assertEqual(dry_run.returncode, 0, dry_run.stderr)
         self.assertFalse((self.root / "doc_memory.py").exists())
@@ -283,7 +295,7 @@ class DocMemoryTests(unittest.TestCase):
         apply = subprocess.run(
             [sys.executable, str(INSTALLER), "--root", str(self.root),
              "--apply", "--with-agents-snippet", "--init"],
-            text=True, capture_output=True, timeout=20, check=False,
+            encoding="utf-8", capture_output=True, timeout=20, check=False,
         )
         self.assertEqual(apply.returncode, 0, apply.stderr)
         agents = (self.root / "AGENTS.md").read_text(encoding="utf-8")
@@ -293,7 +305,7 @@ class DocMemoryTests(unittest.TestCase):
         again = subprocess.run(
             [sys.executable, str(INSTALLER), "--root", str(self.root),
              "--apply", "--with-agents-snippet"],
-            text=True, capture_output=True, timeout=20, check=False,
+            encoding="utf-8", capture_output=True, timeout=20, check=False,
         )
         self.assertEqual(again.returncode, 0, again.stderr)
         agents_again = (self.root / "AGENTS.md").read_text(encoding="utf-8")
@@ -304,7 +316,7 @@ class DocMemoryTests(unittest.TestCase):
         dry_run = subprocess.run(
             [sys.executable, str(SKILL_INSTALLER),
              "--skills-root", str(skills_root)],
-            text=True, capture_output=True, timeout=20, check=False,
+            encoding="utf-8", capture_output=True, timeout=20, check=False,
         )
         self.assertEqual(dry_run.returncode, 0, dry_run.stderr)
         target = skills_root / "doc-memory"
@@ -313,7 +325,7 @@ class DocMemoryTests(unittest.TestCase):
         applied = subprocess.run(
             [sys.executable, str(SKILL_INSTALLER),
              "--skills-root", str(skills_root), "--apply"],
-            text=True, capture_output=True, timeout=20, check=False,
+            encoding="utf-8", capture_output=True, timeout=20, check=False,
         )
         self.assertEqual(applied.returncode, 0, applied.stderr)
         self.assertTrue((target / "SKILL.md").is_file())
@@ -321,7 +333,7 @@ class DocMemoryTests(unittest.TestCase):
         unchanged = subprocess.run(
             [sys.executable, str(SKILL_INSTALLER),
              "--skills-root", str(skills_root), "--apply"],
-            text=True, capture_output=True, timeout=20, check=False,
+            encoding="utf-8", capture_output=True, timeout=20, check=False,
         )
         self.assertEqual(unchanged.returncode, 0, unchanged.stderr)
         self.assertIn("无需写入", unchanged.stdout)
@@ -334,13 +346,13 @@ class DocMemoryTests(unittest.TestCase):
         blocked = subprocess.run(
             [sys.executable, str(SKILL_INSTALLER),
              "--skills-root", str(skills_root), "--apply"],
-            text=True, capture_output=True, timeout=20, check=False,
+            encoding="utf-8", capture_output=True, timeout=20, check=False,
         )
         self.assertEqual(blocked.returncode, 1)
         upgraded = subprocess.run(
             [sys.executable, str(SKILL_INSTALLER),
              "--skills-root", str(skills_root), "--apply", "--force"],
-            text=True, capture_output=True, timeout=20, check=False,
+            encoding="utf-8", capture_output=True, timeout=20, check=False,
         )
         self.assertEqual(upgraded.returncode, 0, upgraded.stderr)
         backups = list(skills_root.glob("doc-memory.backup-*"))
