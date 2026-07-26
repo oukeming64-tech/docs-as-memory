@@ -1,0 +1,29 @@
+.DS_Store
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.coverage
+htmlcov/
+.venv/
+venv/
+*.bak
+*.backup-*
+*.doc-memory.bak-*
+
+# Local coordination and unpublished working material
+/CODEX_*.md
+/COLLAB.md
+/HANDOFF-*.md
+/*任务.md
+/PRD.md
+/SKILL.md
+/STATUS.md
+/promotion/
+
+# Local-only audit baselines and historical agent reports
+/tools/*upstream*
+/fixtures/eval/reports/grok-*.md
+/fixtures/eval/reports/kimi-*.md
+
+# Superseded root-level template; the installable package owns this snippet
+/templates/AGENTS_SNIPPET.md

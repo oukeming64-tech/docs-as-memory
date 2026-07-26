@@ -1,0 +1,865 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-07-26T21:19:28+08:00",
+  "shard_root": "docs/shards",
+  "shards_hash": "fe358df8e1ac4c208cf8bc424af0fffe09cd3602a9bb55bf0a7d7cdfb646f067",
+  "l0_mode": "full",
+  "l0_budget_est_tokens": 1500,
+  "cold_shard_count": 0,
+  "shards": [
+    {
+      "path": "docs/shards/backend/api-error-codes.md",
+      "title": "API 错误码总表",
+      "summary": "统一错误响应格式与全域错误码清单。",
+      "keywords": [
+        "api",
+        "error",
+        "错误码",
+        "异常"
+      ],
+      "domain": "backend",
+      "code_paths": [
+        "src/api/errors.py"
+      ],
+      "trust_level": 2,
+      "verified_at": "2026-07-05",
+      "migration_status": null
+    },
+    {
+      "path": "docs/shards/backend/api-rate-limit.md",
+      "title": "API 限流",
+      "summary": "全局限流规则、配额档位与 429 响应约定。",
+      "keywords": [
+        "api",
+        "ratelimit",
+        "限流",
+        "配额"
+      ],
+      "domain": "backend",
+      "code_paths": [
+        "src/api/ratelimit.py"
+      ],
+      "trust_level": 1,
+      "verified_at": "2026-07-10",
+      "migration_status": null
+    },
+    {
+      "path": "docs/shards/backend/auth-login.md",
+      "title": "Auth 登录流程",
+      "summary": "密码登录签发 access+refresh 双 token 的入口、会话约定与错误码。",
+      "keywords": [
+        "auth",
+        "login",
+        "token",
+        "鉴权",
+        "登录"
+      ],
+      "domain": "backend",
+      "code_paths": [
+        "src/auth",
+        "src/api/session.py"
+      ],
+      "trust_level": 1,
+      "verified_at": "2026-07-20",
+      "migration_status": null
+    },
+    {
+      "path": "docs/shards/backend/auth-permissions.md",
+      "title": "权限模型 RBAC",
+      "summary": "角色-权限两级模型、scope 命名规范与接口鉴权中间件用法。",
+      "keywords": [
+        "auth",
+        "rbac",
+        "permission",
+        "权限",
+        "鉴权"
+      ],
+      "domain": "backend",
+      "code_paths": [
+        "src/auth/rbac.py"
+      ],
+      "trust_level": 2,
+      "verified_at": "2026-07-01",
+      "migration_status": null
+    },
+    {
+      "path": "docs/shards/backend/auth-token-refresh.md",
+      "title": "Auth token 刷新",
+      "summary": "access token 过期后的刷新端点、轮换策略与 REFRESH_TOKEN_EXPIRED 处理。",
+      "keywords": [
+        "auth",
+        "token",
+        "refresh",
+        "刷新",
+        "鉴权"
+      ],
+      "domain": "backend",
+      "code_paths": [
+        "src/auth/refresh.py"
+      ],
+      "trust_level": 1,
+      "verified_at": "2026-07-20",
+      "migration_status": null
+    },
+    {
+      "path": "docs/shards/backend/billing-invoices.md",
+      "title": "账单与发票",
+      "summary": "账单生成周期、发票 PDF 生成与欠费处理策略。",
+      "keywords": [
+        "billing",
+        "invoice",
+        "账单",
+        "发票"
+      ],
+      "domain": "backend",
+      "code_paths": [
+        "src/billing"
+      ],
+      "trust_level": 2,
+      "verified_at": "2026-06-15",
+      "migration_status": null
+    },
+    {
+      "path": "docs/shards/backend/billing-webhooks.md",
+      "title": "支付 webhook 处理",
+      "summary": "第三方支付回调的验签、幂等与对账约定。",
+      "keywords": [
+        "billing",
+        "webhook",
+        "回调",
+        "支付"
+      ],
+      "domain": "backend",
+      "code_paths": [
+        "src/billing/webhooks.py"
+      ],
+      "trust_level": 1,
+      "verified_at": "2026-05-20",
+      "migration_status": null
+    },
+    {
+      "path": "docs/shards/backend/user-profile.md",
+      "title": "用户资料",
+      "summary": "用户资料的读写接口、字段约束与隐私分级。",
+      "keywords": [
+        "user",
+        "profile",
+        "用户",
+        "资料"
+      ],
+      "domain": "backend",
+      "code_paths": [
+        "src/user"
+      ],
+      "trust_level": 2,
+      "verified_at": "2026-06-30",
+      "migration_status": null
+    },
+    {
+      "path": "docs/shards/data/analytics-events.md",
+      "title": "埋点事件规范",
+      "summary": "事件命名、属性规范与新事件上线流程。",
+      "keywords": [
+        "data",
+        "analytics",
+        "埋点",
+        "事件"
+      ],
+      "domain": "data",
+      "code_paths": [
+        "src/analytics"
+      ],
+      "trust_level": 2,
+      "verified_at": "2026-07-12",
+      "migration_status": null
+    },
+    {
+      "path": "docs/shards/data/db-schema-users.md",
+      "title": "users 表结构",
+      "summary": "users 及相关鉴权表的字段、索引与迁移约定。",
+      "keywords": [
+        "data",
+        "schema",
+        "数据库",
+        "用户表"
+      ],
+      "domain": "data",
+      "code_paths": [
+        "db/migrations"
+      ],
+      "trust_level": 1,
+      "verified_at": "2026-07-18",
+      "migration_status": null
+    },
+    {
+      "path": "docs/shards/data/etl-pipeline.md",
+      "title": "数据同步管道",
+      "summary": "业务库到分析库的 ETL 节奏、幂等与失败处理。",
+      "keywords": [
+        "data",
+        "etl",
+        "数据管道",
+        "同步"
+      ],
+      "domain": "data",
+      "code_paths": [
+        "etl"
+      ],
+      "trust_level": 2,
+      "verified_at": "2026-06-08",
+      "migration_status": null
+    },
+    {
+      "path": "docs/shards/design/design-tokens.md",
+      "title": "设计 token",
+      "summary": "颜色、间距、字阶的 token 定义与同步流程。",
+      "keywords": [
+        "design",
+        "tokens",
+        "设计"
+      ],
+      "domain": "design",
+      "code_paths": [
+        "web/src/styles"
+      ],
+      "trust_level": 3,
+      "verified_at": "2026-05-25",
+      "migration_status": null
+    },
+    {
+      "path": "docs/shards/frontend/web-build-pipeline.md",
+      "title": "Web 构建管线",
+      "summary": "构建工具链、环境变量注入与产物发布流程。",
+      "keywords": [
+        "frontend",
+        "build",
+        "构建",
+        "打包"
+      ],
+      "domain": "frontend",
+      "code_paths": [
+        "web/build"
+      ],
+      "trust_level": 3,
+      "verified_at": "2026-05-30",
+      "migration_status": null
+    },
+    {
+      "path": "docs/shards/frontend/web-routing.md",
+      "title": "Web 路由",
+      "summary": "前端路由结构、鉴权守卫与懒加载约定。",
+      "keywords": [
+        "frontend",
+        "router",
+        "路由",
+        "页面"
+      ],
+      "domain": "frontend",
+      "code_paths": [
+        "web/src/router"
+      ],
+      "trust_level": 2,
+      "verified_at": "2026-06-25",
+      "migration_status": null
+    },
+    {
+      "path": "docs/shards/frontend/web-state-store.md",
+      "title": "前端状态管理",
+      "summary": "store 分层、服务端状态缓存策略与禁止事项。",
+      "keywords": [
+        "frontend",
+        "store",
+        "状态管理"
+      ],
+      "domain": "frontend",
+      "code_paths": [
+        "web/src/store"
+      ],
+      "trust_level": 2,
+      "verified_at": "2026-06-18",
+      "migration_status": null
+    },
+    {
+      "path": "docs/shards/frontend/web-ui-components.md",
+      "title": "UI 组件库约定",
+      "summary": "组件分层、样式方案与新增组件 checklist。",
+      "keywords": [
+        "frontend",
+        "component",
+        "组件"
+      ],
+      "domain": "frontend",
+      "code_paths": [
+        "web/src/components"
+      ],
+      "trust_level": 3,
+      "verified_at": "2026-04-15",
+      "migration_status": null
+    },
+    {
+      "path": "docs/shards/growth/referral-program.md",
+      "title": "邀请返利计划",
+      "summary": "邀请奖励规则、防刷策略与结算周期。",
+      "keywords": [
+        "growth",
+        "referral",
+        "邀请",
+        "增长"
+      ],
+      "domain": "growth",
+      "code_paths": [
+        "src/growth"
+      ],
+      "trust_level": 4,
+      "verified_at": "2026-06-12",
+      "migration_status": null
+    },
+    {
+      "path": "docs/shards/mobile/app-release.md",
+      "title": "移动客户端发版",
+      "summary": "iOS/Android 发版节奏、热更新边界与灰度策略。",
+      "keywords": [
+        "mobile",
+        "release",
+        "发版",
+        "客户端"
+      ],
+      "domain": "mobile",
+      "code_paths": [
+        "mobile"
+      ],
+      "trust_level": 3,
+      "verified_at": "2026-07-01",
+      "migration_status": null
+    },
+    {
+      "path": "docs/shards/ops/deploy-runbook.md",
+      "title": "部署手册",
+      "summary": "标准发布流程、回滚步骤与发布窗口。",
+      "keywords": [
+        "ops",
+        "deploy",
+        "部署",
+        "发布"
+      ],
+      "domain": "ops",
+      "code_paths": [
+        "deploy"
+      ],
+      "trust_level": 1,
+      "verified_at": "2026-07-22",
+      "migration_status": null
+    },
+    {
+      "path": "docs/shards/ops/incident-response.md",
+      "title": "事故应急响应",
+      "summary": "事故分级、响应流程与复盘要求。",
+      "keywords": [
+        "ops",
+        "incident",
+        "事故",
+        "应急响应"
+      ],
+      "domain": "ops",
+      "code_paths": [],
+      "trust_level": 2,
+      "verified_at": "2026-06-20",
+      "migration_status": null
+    },
+    {
+      "path": "docs/shards/ops/monitoring-alerts.md",
+      "title": "监控与告警",
+      "summary": "核心指标、告警分级与值班响应时限。",
+      "keywords": [
+        "ops",
+        "monitoring",
+        "alert",
+        "监控",
+        "告警"
+      ],
+      "domain": "ops",
+      "code_paths": [
+        "deploy/monitoring"
+      ],
+      "trust_level": 2,
+      "verified_at": "2026-07-15",
+      "migration_status": null
+    },
+    {
+      "path": "docs/shards/product/changelog-policy.md",
+      "title": "更新日志规范",
+      "summary": "changelog 的撰写规范、分类标签与发布节奏。",
+      "keywords": [
+        "product",
+        "changelog",
+        "更新日志"
+      ],
+      "domain": "product",
+      "code_paths": [],
+      "trust_level": 4,
+      "verified_at": "2026-05-10",
+      "migration_status": null
+    },
+    {
+      "path": "docs/shards/product/onboarding-flow.md",
+      "title": "新手引导流程",
+      "summary": "注册后引导的步骤设计、完成判定与跳过策略。",
+      "keywords": [
+        "product",
+        "onboarding",
+        "新手引导"
+      ],
+      "domain": "product",
+      "code_paths": [
+        "web/src/onboarding"
+      ],
+      "trust_level": 4,
+      "verified_at": "2026-06-01",
+      "migration_status": null
+    },
+    {
+      "path": "docs/shards/product/pricing-page.md",
+      "title": "定价页",
+      "summary": "套餐档位展示、试用规则与定价变更流程。",
+      "keywords": [
+        "product",
+        "pricing",
+        "定价",
+        "套餐"
+      ],
+      "domain": "product",
+      "code_paths": [
+        "web/src/pricing"
+      ],
+      "trust_level": 4,
+      "verified_at": "2026-07-08",
+      "migration_status": null
+    },
+    {
+      "path": "docs/shards/qa/test-strategy.md",
+      "title": "测试策略",
+      "summary": "测试金字塔分层、覆盖率门槛与 CI 集成方式。",
+      "keywords": [
+        "qa",
+        "test",
+        "测试",
+        "策略"
+      ],
+      "domain": "qa",
+      "code_paths": [
+        "tests"
+      ],
+      "trust_level": 3,
+      "verified_at": "2026-07-06",
+      "migration_status": null
+    },
+    {
+      "path": "docs/shards/security/secrets-policy.md",
+      "title": "密钥管理规范",
+      "summary": "密钥存放、轮换周期与泄露应急。",
+      "keywords": [
+        "security",
+        "secret",
+        "密钥",
+        "安全"
+      ],
+      "domain": "security",
+      "code_paths": [],
+      "trust_level": 1,
+      "verified_at": "2026-07-02",
+      "migration_status": null
+    },
+    {
+      "path": "docs/shards/security/threat-model-auth.md",
+      "title": "鉴权威胁模型",
+      "summary": "鉴权子系统的威胁清单与对应缓解措施。",
+      "keywords": [
+        "security",
+        "threat",
+        "威胁模型",
+        "鉴权"
+      ],
+      "domain": "security",
+      "code_paths": [
+        "src/auth"
+      ],
+      "trust_level": 2,
+      "verified_at": "2026-06-27",
+      "migration_status": null
+    }
+  ],
+  "by_keyword": {
+    "alert": [
+      "docs/shards/ops/monitoring-alerts.md"
+    ],
+    "analytics": [
+      "docs/shards/data/analytics-events.md"
+    ],
+    "api": [
+      "docs/shards/backend/api-error-codes.md",
+      "docs/shards/backend/api-rate-limit.md"
+    ],
+    "auth": [
+      "docs/shards/backend/auth-login.md",
+      "docs/shards/backend/auth-permissions.md",
+      "docs/shards/backend/auth-token-refresh.md"
+    ],
+    "billing": [
+      "docs/shards/backend/billing-invoices.md",
+      "docs/shards/backend/billing-webhooks.md"
+    ],
+    "build": [
+      "docs/shards/frontend/web-build-pipeline.md"
+    ],
+    "changelog": [
+      "docs/shards/product/changelog-policy.md"
+    ],
+    "component": [
+      "docs/shards/frontend/web-ui-components.md"
+    ],
+    "data": [
+      "docs/shards/data/analytics-events.md",
+      "docs/shards/data/db-schema-users.md",
+      "docs/shards/data/etl-pipeline.md"
+    ],
+    "deploy": [
+      "docs/shards/ops/deploy-runbook.md"
+    ],
+    "design": [
+      "docs/shards/design/design-tokens.md"
+    ],
+    "error": [
+      "docs/shards/backend/api-error-codes.md"
+    ],
+    "etl": [
+      "docs/shards/data/etl-pipeline.md"
+    ],
+    "frontend": [
+      "docs/shards/frontend/web-build-pipeline.md",
+      "docs/shards/frontend/web-routing.md",
+      "docs/shards/frontend/web-state-store.md",
+      "docs/shards/frontend/web-ui-components.md"
+    ],
+    "growth": [
+      "docs/shards/growth/referral-program.md"
+    ],
+    "incident": [
+      "docs/shards/ops/incident-response.md"
+    ],
+    "invoice": [
+      "docs/shards/backend/billing-invoices.md"
+    ],
+    "login": [
+      "docs/shards/backend/auth-login.md"
+    ],
+    "mobile": [
+      "docs/shards/mobile/app-release.md"
+    ],
+    "monitoring": [
+      "docs/shards/ops/monitoring-alerts.md"
+    ],
+    "onboarding": [
+      "docs/shards/product/onboarding-flow.md"
+    ],
+    "ops": [
+      "docs/shards/ops/deploy-runbook.md",
+      "docs/shards/ops/incident-response.md",
+      "docs/shards/ops/monitoring-alerts.md"
+    ],
+    "permission": [
+      "docs/shards/backend/auth-permissions.md"
+    ],
+    "pricing": [
+      "docs/shards/product/pricing-page.md"
+    ],
+    "product": [
+      "docs/shards/product/changelog-policy.md",
+      "docs/shards/product/onboarding-flow.md",
+      "docs/shards/product/pricing-page.md"
+    ],
+    "profile": [
+      "docs/shards/backend/user-profile.md"
+    ],
+    "qa": [
+      "docs/shards/qa/test-strategy.md"
+    ],
+    "ratelimit": [
+      "docs/shards/backend/api-rate-limit.md"
+    ],
+    "rbac": [
+      "docs/shards/backend/auth-permissions.md"
+    ],
+    "referral": [
+      "docs/shards/growth/referral-program.md"
+    ],
+    "refresh": [
+      "docs/shards/backend/auth-token-refresh.md"
+    ],
+    "release": [
+      "docs/shards/mobile/app-release.md"
+    ],
+    "router": [
+      "docs/shards/frontend/web-routing.md"
+    ],
+    "schema": [
+      "docs/shards/data/db-schema-users.md"
+    ],
+    "secret": [
+      "docs/shards/security/secrets-policy.md"
+    ],
+    "security": [
+      "docs/shards/security/secrets-policy.md",
+      "docs/shards/security/threat-model-auth.md"
+    ],
+    "store": [
+      "docs/shards/frontend/web-state-store.md"
+    ],
+    "test": [
+      "docs/shards/qa/test-strategy.md"
+    ],
+    "threat": [
+      "docs/shards/security/threat-model-auth.md"
+    ],
+    "token": [
+      "docs/shards/backend/auth-login.md",
+      "docs/shards/backend/auth-token-refresh.md"
+    ],
+    "tokens": [
+      "docs/shards/design/design-tokens.md"
+    ],
+    "user": [
+      "docs/shards/backend/user-profile.md"
+    ],
+    "webhook": [
+      "docs/shards/backend/billing-webhooks.md"
+    ],
+    "事件": [
+      "docs/shards/data/analytics-events.md"
+    ],
+    "事故": [
+      "docs/shards/ops/incident-response.md"
+    ],
+    "刷新": [
+      "docs/shards/backend/auth-token-refresh.md"
+    ],
+    "发布": [
+      "docs/shards/ops/deploy-runbook.md"
+    ],
+    "发版": [
+      "docs/shards/mobile/app-release.md"
+    ],
+    "发票": [
+      "docs/shards/backend/billing-invoices.md"
+    ],
+    "同步": [
+      "docs/shards/data/etl-pipeline.md"
+    ],
+    "告警": [
+      "docs/shards/ops/monitoring-alerts.md"
+    ],
+    "回调": [
+      "docs/shards/backend/billing-webhooks.md"
+    ],
+    "埋点": [
+      "docs/shards/data/analytics-events.md"
+    ],
+    "增长": [
+      "docs/shards/growth/referral-program.md"
+    ],
+    "套餐": [
+      "docs/shards/product/pricing-page.md"
+    ],
+    "威胁模型": [
+      "docs/shards/security/threat-model-auth.md"
+    ],
+    "安全": [
+      "docs/shards/security/secrets-policy.md"
+    ],
+    "定价": [
+      "docs/shards/product/pricing-page.md"
+    ],
+    "客户端": [
+      "docs/shards/mobile/app-release.md"
+    ],
+    "密钥": [
+      "docs/shards/security/secrets-policy.md"
+    ],
+    "应急响应": [
+      "docs/shards/ops/incident-response.md"
+    ],
+    "异常": [
+      "docs/shards/backend/api-error-codes.md"
+    ],
+    "打包": [
+      "docs/shards/frontend/web-build-pipeline.md"
+    ],
+    "支付": [
+      "docs/shards/backend/billing-webhooks.md"
+    ],
+    "数据库": [
+      "docs/shards/data/db-schema-users.md"
+    ],
+    "数据管道": [
+      "docs/shards/data/etl-pipeline.md"
+    ],
+    "新手引导": [
+      "docs/shards/product/onboarding-flow.md"
+    ],
+    "更新日志": [
+      "docs/shards/product/changelog-policy.md"
+    ],
+    "权限": [
+      "docs/shards/backend/auth-permissions.md"
+    ],
+    "构建": [
+      "docs/shards/frontend/web-build-pipeline.md"
+    ],
+    "测试": [
+      "docs/shards/qa/test-strategy.md"
+    ],
+    "状态管理": [
+      "docs/shards/frontend/web-state-store.md"
+    ],
+    "用户": [
+      "docs/shards/backend/user-profile.md"
+    ],
+    "用户表": [
+      "docs/shards/data/db-schema-users.md"
+    ],
+    "登录": [
+      "docs/shards/backend/auth-login.md"
+    ],
+    "监控": [
+      "docs/shards/ops/monitoring-alerts.md"
+    ],
+    "策略": [
+      "docs/shards/qa/test-strategy.md"
+    ],
+    "组件": [
+      "docs/shards/frontend/web-ui-components.md"
+    ],
+    "设计": [
+      "docs/shards/design/design-tokens.md"
+    ],
+    "账单": [
+      "docs/shards/backend/billing-invoices.md"
+    ],
+    "资料": [
+      "docs/shards/backend/user-profile.md"
+    ],
+    "路由": [
+      "docs/shards/frontend/web-routing.md"
+    ],
+    "邀请": [
+      "docs/shards/growth/referral-program.md"
+    ],
+    "部署": [
+      "docs/shards/ops/deploy-runbook.md"
+    ],
+    "配额": [
+      "docs/shards/backend/api-rate-limit.md"
+    ],
+    "鉴权": [
+      "docs/shards/backend/auth-login.md",
+      "docs/shards/backend/auth-permissions.md",
+      "docs/shards/backend/auth-token-refresh.md",
+      "docs/shards/security/threat-model-auth.md"
+    ],
+    "错误码": [
+      "docs/shards/backend/api-error-codes.md"
+    ],
+    "限流": [
+      "docs/shards/backend/api-rate-limit.md"
+    ],
+    "页面": [
+      "docs/shards/frontend/web-routing.md"
+    ]
+  },
+  "by_code_path": {
+    "db/migrations": [
+      "docs/shards/data/db-schema-users.md"
+    ],
+    "deploy": [
+      "docs/shards/ops/deploy-runbook.md"
+    ],
+    "deploy/monitoring": [
+      "docs/shards/ops/monitoring-alerts.md"
+    ],
+    "etl": [
+      "docs/shards/data/etl-pipeline.md"
+    ],
+    "mobile": [
+      "docs/shards/mobile/app-release.md"
+    ],
+    "src/analytics": [
+      "docs/shards/data/analytics-events.md"
+    ],
+    "src/api/errors.py": [
+      "docs/shards/backend/api-error-codes.md"
+    ],
+    "src/api/ratelimit.py": [
+      "docs/shards/backend/api-rate-limit.md"
+    ],
+    "src/api/session.py": [
+      "docs/shards/backend/auth-login.md"
+    ],
+    "src/auth": [
+      "docs/shards/backend/auth-login.md",
+      "docs/shards/security/threat-model-auth.md"
+    ],
+    "src/auth/rbac.py": [
+      "docs/shards/backend/auth-permissions.md"
+    ],
+    "src/auth/refresh.py": [
+      "docs/shards/backend/auth-token-refresh.md"
+    ],
+    "src/billing": [
+      "docs/shards/backend/billing-invoices.md"
+    ],
+    "src/billing/webhooks.py": [
+      "docs/shards/backend/billing-webhooks.md"
+    ],
+    "src/growth": [
+      "docs/shards/growth/referral-program.md"
+    ],
+    "src/user": [
+      "docs/shards/backend/user-profile.md"
+    ],
+    "tests": [
+      "docs/shards/qa/test-strategy.md"
+    ],
+    "web/build": [
+      "docs/shards/frontend/web-build-pipeline.md"
+    ],
+    "web/src/components": [
+      "docs/shards/frontend/web-ui-components.md"
+    ],
+    "web/src/onboarding": [
+      "docs/shards/product/onboarding-flow.md"
+    ],
+    "web/src/pricing": [
+      "docs/shards/product/pricing-page.md"
+    ],
+    "web/src/router": [
+      "docs/shards/frontend/web-routing.md"
+    ],
+    "web/src/store": [
+      "docs/shards/frontend/web-state-store.md"
+    ],
+    "web/src/styles": [
+      "docs/shards/design/design-tokens.md"
+    ]
+  },
+  "domains": {
+    "backend": {},
+    "data": {},
+    "design": {},
+    "frontend": {},
+    "growth": {},
+    "mobile": {},
+    "ops": {},
+    "product": {},
+    "qa": {},
+    "security": {}
+  }
+}

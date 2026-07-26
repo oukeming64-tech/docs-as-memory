@@ -1,0 +1,4 @@
+interface:
+  display_name: "Docs as Memory"
+  short_description: "少读、核真、窄改并验证项目文档"
+  default_prompt: "Use $doc-memory to retrieve the smallest relevant document set, verify it against implementation, patch narrowly, and seal the result with reindex and validate."
