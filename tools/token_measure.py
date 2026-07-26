@@ -36,6 +36,18 @@ L0_BUDGET = 1500
 RATIO_LIMIT = 0.30
 
 
+def configure_utf8_stdio() -> None:
+    """Keep JSON and diagnostics usable on narrow Windows console locales."""
+    for stream in (sys.stdout, sys.stderr):
+        reconfigure = getattr(stream, "reconfigure", None)
+        if reconfigure is None:
+            continue
+        try:
+            reconfigure(encoding="utf-8", errors="backslashreplace")
+        except (OSError, ValueError):
+            pass
+
+
 def est_tokens(nbytes: int) -> int:
     return math.ceil(nbytes / 4)
 
@@ -283,6 +295,7 @@ def display_report_path(path: str) -> str:
 
 
 def main():
+    configure_utf8_stdio()
     p = argparse.ArgumentParser(
         description="Docs as Memory token 量尺（method=normalized_utf8_bytes/4）")
     p.add_argument(

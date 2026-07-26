@@ -22,6 +22,8 @@ All notable changes to this project will be documented here.
 - Fail token evaluation immediately when a CLI subprocess exits non-zero.
 - Handle external report directories on a different Windows drive without
   failing while formatting the result path.
+- Force UTF-8 token-evaluation output on narrow Windows console locales such
+  as cp1252.
 
 ## [0.1.0] - 2026-07-26
 

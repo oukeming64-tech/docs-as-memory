@@ -396,6 +396,8 @@ class DocMemoryTests(unittest.TestCase):
         ]
         before = {path: sha256(path) for path in protected}
         output = Path(self.temporary.name) / "reports"
+        environment = os.environ.copy()
+        environment["PYTHONIOENCODING"] = "cp1252"
         completed = subprocess.run(
             [
                 sys.executable,
@@ -411,6 +413,7 @@ class DocMemoryTests(unittest.TestCase):
             capture_output=True,
             timeout=20,
             check=False,
+            env=environment,
         )
         self.assertEqual(completed.returncode, 0, completed.stderr)
         payload = json.loads(completed.stdout)

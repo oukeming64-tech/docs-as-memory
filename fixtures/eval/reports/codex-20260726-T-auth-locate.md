@@ -1,7 +1,7 @@
 # Token eval report
 
 - runner: codex
-- date: 2026-07-26T22:20:56+08:00
+- date: 2026-07-26T22:23:42+08:00
 - fixture_id: demo_project@fe358df8e1ac4c20
 - task_id: T-auth-locate
 - method: normalized_utf8_bytes/4
