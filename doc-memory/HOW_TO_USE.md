@@ -25,9 +25,10 @@ doc-memory 把项目文档工作分成四步：
 
 ```bash
 python3 doc_memory.py overview
-python3 doc_memory.py search "多灯 multi light" --limit 2
+python3 doc_memory.py search "多灯 multi light"
 ```
 
+`search` 默认只返回 top-2；明确需要完整命中清单时才使用 `--limit 0`。
 默认搜不到历史规格时，先判断任务是否真的需要历史；需要才：
 
 ```bash

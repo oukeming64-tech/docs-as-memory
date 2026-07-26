@@ -2,6 +2,29 @@
 
 All notable changes to this project will be documented here.
 
+## [0.1.1] - 2026-07-26
+
+### Changed
+
+- Limit `search` to the two highest-scoring results by default; use
+  `--limit 0` only when all matches are intentionally needed.
+- Freeze scripted token evaluation to each task card's `top_k` instead of
+  inheriting an unbounded CLI result set.
+- Allow `codex` as an engineering-regression runner without treating it as a
+  substitute for the required independent Kimi/Grok acceptance pair.
+
+### Fixed
+
+- Restore the `T-auth-locate` regression from `0.3266` to `0.2555` on the
+  frozen fixture while preserving the answer probe.
+- Run token evaluation against an isolated fixture copy so `reindex` does not
+  dirty committed demo indexes.
+- Fail token evaluation immediately when a CLI subprocess exits non-zero.
+- Handle external report directories on a different Windows drive without
+  failing while formatting the result path.
+- Force UTF-8 token-evaluation output on narrow Windows console locales such
+  as cp1252.
+
 ## [0.1.0] - 2026-07-26
 
 First public alpha release.

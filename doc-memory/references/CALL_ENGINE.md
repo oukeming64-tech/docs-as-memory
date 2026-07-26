@@ -15,7 +15,7 @@ Docs as Memory 是 doc-memory 的**自有子系统**（技能包 `scripts/doc_me
 
 ```bash
 python3 doc_memory.py overview                          # R：只打印新鲜 L0
-python3 doc_memory.py search "鉴权 token" --limit 2     # R：热域检索
+python3 doc_memory.py search "鉴权 token"               # R：热域检索，默认 top-2
 python3 doc_memory.py search "旧规格" --include-cold    # R：显式冷域回退
 python3 doc_memory.py affected src/auth/                # R：代码路径反查碎片
 python3 doc_memory.py reindex                           # S：改碎片后重建索引（原子写）
@@ -24,7 +24,8 @@ python3 doc_memory.py migrate --source docs-old         # 接入：默认 dry-ru
 ```
 
 - `--root DIR` 指定宿主项目根（默认当前目录）。
-- search 支持 `--json`、`--limit N`；search/affected 支持
+- search 默认 `--limit 2`，显式 `--limit 0` 才输出全部命中；同时支持
+  `--json`。search/affected 支持
   `--include-cold`、`--exclude-glob`。
 - 读取损坏 shard 时默认 exit 1；只有诊断可显式 `--allow-partial`。
 - overview 遇过期索引默认 exit 1；`--allow-stale` 仅用于诊断。

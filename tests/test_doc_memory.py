@@ -3,6 +3,7 @@ from __future__ import annotations
 import hashlib
 import json
 import os
+import runpy
 import shutil
 import subprocess
 import sys
@@ -16,6 +17,7 @@ CLI = REPO_ROOT / "doc_memory.py"
 BUNDLED_CLI = REPO_ROOT / "doc-memory" / "scripts" / "doc_memory.py"
 INSTALLER = REPO_ROOT / "doc-memory" / "scripts" / "install_project.py"
 SKILL_INSTALLER = REPO_ROOT / "doc-memory" / "scripts" / "install_skill.py"
+TOKEN_MEASURE = REPO_ROOT / "tools" / "token_measure.py"
 
 
 def sha256(path: Path) -> str:
@@ -78,7 +80,7 @@ class DocMemoryTests(unittest.TestCase):
             encoding="utf-8", capture_output=True, timeout=20, check=False,
         )
         self.assertEqual(completed.returncode, 0, completed.stderr)
-        self.assertEqual(completed.stdout.strip(), "doc-memory 0.1.0")
+        self.assertEqual(completed.stdout.strip(), "doc-memory 0.1.1")
 
     def test_cli_forces_utf8_output_on_narrow_locale(self):
         environment = os.environ.copy()
@@ -226,6 +228,23 @@ class DocMemoryTests(unittest.TestCase):
         self.assertEqual(included.returncode, 0, included.stderr)
         self.assertIn("example-hello.md", included.stdout)
 
+    def test_search_defaults_to_top_two_and_zero_is_unlimited(self):
+        self.init()
+        for index in range(3):
+            self.write_shard(
+                f"search/result-{index}.md",
+                f"title: Shared result {index}\n"
+                f"summary: Shared search result {index}\n"
+                "keywords: [shared]\n"
+                "domain: search\n",
+            )
+        default = self.run_cli("search", "shared")
+        self.assertEqual(default.returncode, 0, default.stderr)
+        self.assertEqual(len(default.stdout.splitlines()), 2)
+        unlimited = self.run_cli("search", "shared", "--limit", "0")
+        self.assertEqual(unlimited.returncode, 0, unlimited.stderr)
+        self.assertEqual(len(unlimited.stdout.splitlines()), 3)
+
     def test_l0_dynamically_collapses_to_budget(self):
         shard_root = self.root / "docs" / "shards"
         shard_root.mkdir(parents=True)
@@ -368,6 +387,50 @@ class DocMemoryTests(unittest.TestCase):
         self.assertEqual(len(backups), 1)
         self.assertIn("local change", (backups[0] / "README.md").read_text(
             encoding="utf-8"))
+
+    def test_token_measure_uses_isolated_fixture_and_codex_runner(self):
+        fixture = REPO_ROOT / "fixtures" / "demo_project"
+        protected = [
+            fixture / "docs" / "INDEX.md",
+            fixture / "docs" / "index.json",
+        ]
+        before = {path: sha256(path) for path in protected}
+        output = Path(self.temporary.name) / "reports"
+        environment = os.environ.copy()
+        environment["PYTHONIOENCODING"] = "cp1252"
+        completed = subprocess.run(
+            [
+                sys.executable,
+                str(TOKEN_MEASURE),
+                "--runner",
+                "codex",
+                "--task",
+                "T-auth-locate",
+                "--out",
+                str(output),
+            ],
+            encoding="utf-8",
+            capture_output=True,
+            timeout=20,
+            check=False,
+            env=environment,
+        )
+        self.assertEqual(completed.returncode, 0, completed.stderr)
+        payload = json.loads(completed.stdout)
+        self.assertLessEqual(payload["ratio"], 0.30)
+        self.assertTrue(Path(payload["report"]).is_absolute())
+        self.assertEqual(
+            len(list(output.glob("codex-*-T-auth-locate.md"))), 1)
+        self.assertEqual(before, {path: sha256(path) for path in protected})
+
+    def test_token_measure_fails_closed_on_cli_error(self):
+        token_measure = runpy.run_path(str(TOKEN_MEASURE))
+        with self.assertRaisesRegex(RuntimeError, "exit=2"):
+            token_measure["run_cli"](
+                ["search", "missing", "--limit", "-1"],
+                str(self.root),
+                [],
+            )
 
 
 if __name__ == "__main__":

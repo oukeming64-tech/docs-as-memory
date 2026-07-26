@@ -14,6 +14,7 @@ probe_expected: REFRESH_TOKEN_EXPIRED
 ```
 
 - 对应 AC-1。
-- scripted_path 流程固定为：读 INDEX.md → `doc-memory search "<query>"` → 打开 top_k 碎片。
+- scripted_path 流程固定为：读 INDEX.md →
+  `doc-memory search "<query>" --limit <top_k>` → 打开 top_k 碎片。
 - 探针判定：probe_expected 字符串出现在已加载碎片正文中（脚本化判定；agent 实机模式由评审人判定）。
 - 双方必须使用同一 query、同一 top_k、同一 fixture 哈希，禁止口头提示。
