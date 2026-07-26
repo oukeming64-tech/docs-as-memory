@@ -7,8 +7,8 @@ doc-memory — 文档碎片索引 CLI（零第三方依赖，Python >= 3.9，仅
 实现约定：
 - frontmatter 只支持 YAML 子集：`key: 标量`、`key: [a, b]` 行内列表、
   `key:` 后跟 `- item` 块列表、单/双引号、` #` 行尾注释。
-- 索引新鲜度用内容哈希（sha256 串联 relpath + b'\\n' + file_bytes，稳定排序），
-  与 specs/TOKEN_EVAL.md §8 的 fixture hash 同一算法；不用 mtime。
+- 索引新鲜度用内容哈希（Markdown 换行规范为 LF 后，sha256 串联
+  relpath + b'\\n' + normalized_bytes，稳定排序）；不用 mtime。
 - search 排序：keyword 精确命中 x3 + title 字面 x2 + summary/body/path 字面 x1，
   平分按路径字典序；大小写不敏感；默认排除 history/cold 冷域。
 - affected：查询路径与 code_path 任一方是另一方前缀即命中（尾斜杠归一化）。
@@ -44,7 +44,7 @@ def configure_utf8_stdio() -> None:
 configure_utf8_stdio()
 
 VERSION = "0.1.0"
-SCHEMA_VERSION = 1
+SCHEMA_VERSION = 2
 SHARD_ROOT = os.path.join("docs", "shards")
 INDEX_MD = os.path.join("docs", "INDEX.md")
 INDEX_JSON = os.path.join("docs", "index.json")
@@ -93,9 +93,14 @@ SLUG_RE = re.compile(r"^[a-z0-9][a-z0-9_-]*$")
 # 通用工具
 # ---------------------------------------------------------------------------
 
+def normalize_markdown_bytes(data: bytes) -> bytes:
+    """Normalize text line endings so committed indexes are cross-platform."""
+    return data.replace(b"\r\n", b"\n").replace(b"\r", b"\n")
+
+
 def est_tokens(data: bytes) -> int:
-    """唯一量尺：est_tokens = ceil(utf8_bytes / 4)（specs/TOKEN_EVAL.md §3）。"""
-    return math.ceil(len(data) / 4)
+    """唯一量尺：est_tokens = ceil(normalized_utf8_bytes / 4)。"""
+    return math.ceil(len(normalize_markdown_bytes(data)) / 4)
 
 
 def eprint(*args):
@@ -322,13 +327,13 @@ def iter_shard_files(root: str):
 
 
 def shards_hash(root: str) -> str:
-    """内容哈希：sha256 串联 relpath + b'\\n' + file_bytes（TOKEN_EVAL §8 同算法）。"""
+    """Cross-platform hash over paths and LF-normalized Markdown bytes."""
     h = hashlib.sha256()
     for rel, full in iter_shard_files(root):
         h.update(rel.encode("utf-8"))
         h.update(b"\n")
         with open(full, "rb") as f:
-            h.update(f.read())
+            h.update(normalize_markdown_bytes(f.read()))
     return h.hexdigest()
 
 
@@ -419,7 +424,8 @@ def load_shards(root: str, strict: bool = False):
         try:
             with open(full, "rb") as file_handle:
                 raw_data = file_handle.read()
-            text = raw_data.decode("utf-8")
+            normalized_data = normalize_markdown_bytes(raw_data)
+            text = normalized_data.decode("utf-8")
         except UnicodeDecodeError:
             errors.append(f"{rel}: 非 UTF-8 编码")
             continue
@@ -438,7 +444,7 @@ def load_shards(root: str, strict: bool = False):
             continue
         if meta.get("migration_status") == "needs-review":
             migration_review_count += 1
-        nbytes = len(raw_data)
+        nbytes = len(normalized_data)
         keywords = meta.get("keywords")
         code_paths = meta.get("code_paths")
         entries.append({
@@ -623,7 +629,8 @@ def cmd_reindex(args) -> int:
     imd_bytes = index_md.encode("utf-8")
     print(f"reindex 完成：{len(entries)} 碎片，{len(index['domains'])} 个 domain")
     print(f"  {INDEX_MD}  est_tokens={est_tokens(imd_bytes)} "
-          f"(utf8_bytes={len(imd_bytes)}, mode={l0_mode}, 预算≤{L0_BUDGET})")
+          f"(normalized_utf8_bytes={len(normalize_markdown_bytes(imd_bytes))}, "
+          f"mode={l0_mode}, 预算≤{L0_BUDGET})")
     print(f"  {INDEX_JSON} shards_hash={shash[:12]}…")
     return 0
 

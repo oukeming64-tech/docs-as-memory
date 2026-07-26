@@ -7,7 +7,8 @@
 - [真实文档副本基准](real-docs-benchmark-2026-07-26.md)：四个真实目录、
   59 篇 Markdown；验证源哈希不变、14 个查询、冷域回退、`affected` 映射和封口时间。
 - [Token 验收规则](../../../specs/TOKEN_EVAL.md)：固定
-  `est_tokens = ceil(utf8_bytes / 4)`、加载范围、任务卡、内容哈希和双端一致性阈值。
+  `est_tokens = ceil(normalized_utf8_bytes / 4)`、加载范围、任务卡、内容哈希和
+  双端一致性阈值。
 - `../tasks/`：三个冻结的 demo 任务卡。
 
 ## 结论边界

@@ -1,6 +1,6 @@
 # Token 验收规则（防自欺）
 
-- 版本：v1（量尺不变；CLI 当前发布为 `0.1.0` public alpha）
+- 版本：v1.1（v1 数字兼容；补充跨平台换行规范）
 - 状态：**历史 Kimi/Grok 双跑已完成；当前检索核心的正式双端重跑仍是公开路线图项目**
 - 适用：AC-1、AC-5 及一切「省 token」宣称
 - 原则：涉及 token 的数字 **禁止单方口述**；必须 **同一套量尺 + 双人各跑 + 留原始输出**
@@ -44,14 +44,18 @@ token 相关结论最容易：
 在未引入第三方 tokenizer 库的前提下（与「零依赖」一致），**全项目只允许一种**文档 token 估算：
 
 ```text
-est_tokens = ceil(utf8_byte_length / 4)
+est_tokens = ceil(normalized_utf8_byte_length / 4)
 ```
 
 - 对象：将要进入模型上下文的 **文档字节**（见 §4 计入范围）
 - 编码：UTF-8
-- 实现：评测脚本或 CLI 子命令必须打印 `utf8_bytes` 与 `est_tokens`，禁止只打印百分比
+- 换行：计算前把 CRLF 和 CR 规范为 LF，避免 Windows/macOS 仅因 checkout
+  换行不同而得到不同量尺
+- 实现：评测脚本或 CLI 子命令必须打印 `normalized_utf8_bytes` 与
+  `est_tokens`，禁止只打印百分比
 
-> 说明：这不是 billable API token 的精确值，而是 **可复现的相对量尺**。宣称「省额度」时必须写明：`method=utf8_bytes/4`。
+> 说明：这不是 billable API token 的精确值，而是 **可复现的相对量尺**。
+> 宣称「省额度」时必须写明：`method=normalized_utf8_bytes/4`。
 > 若未来要改公式，升本文件版本，并 **作废** 旧报告。
 
 ### 3.2 禁止
@@ -67,7 +71,7 @@ est_tokens = ceil(utf8_byte_length / 4)
 
 ### 4.1 Baseline（整读对照）
 
-固定评测仓内，下列全部拼接后算 `utf8_bytes`：
+固定评测仓内，下列全部拼接并规范换行后算 `normalized_utf8_bytes`：
 
 - `docs/shards/**/*.md` 的 **完整文件**（含 frontmatter）
 - **不含** `docs/INDEX.md` / `docs/index.json`（baseline 假设「没有 Docs as Memory」时 agent 直接啃碎片全集；若夹具还有未拆大文档，则那些大文档全文也计入——夹具清单写死）
@@ -150,13 +154,13 @@ fixtures/eval/reports/<runner>-<YYYYMMDD>-<task_id>.md
 - date: ISO-8601
 - fixture_id: demo_project@<git_or_content_hash>
 - task_id: T-...
-- method: utf8_bytes/4
+- method: normalized_utf8_bytes/4
 - mode: agent | scripted_path
 
 ## Absolute numbers
-- baseline_utf8_bytes:
+- baseline_normalized_utf8_bytes:
 - baseline_est_tokens:
-- atlas_utf8_bytes:
+- atlas_normalized_utf8_bytes:
 - atlas_est_tokens:
 - ratio: atlas_est / baseline_est
 
@@ -191,7 +195,8 @@ fixtures/eval/reports/SUMMARY.md
 报告必须含 `fixture_id`：
 
 - 对 `fixtures/demo_project/docs/shards` 下所有文件做稳定排序后的内容哈希
-- 推荐：标准库 `hashlib.sha256` 串联 `path + b'\\n' + file_bytes`
+- 推荐：标准库 `hashlib.sha256` 串联
+  `path + b'\\n' + normalized_file_bytes`，其中换行先规范为 LF
 - K 与 G 的 hash **必须相同** 才允许比数字；不同则先对齐夹具再跑
 
 ---

@@ -3,7 +3,7 @@
 - 日期：2026-07-26
 - 执行者：Codex
 - 环境：隔离临时副本
-- 方法：`est_tokens = ceil(utf8_bytes/4)`
+- 方法：`est_tokens = ceil(normalized_utf8_bytes/4)`；本次样本为 LF，数字不变
 - 边界：这是 public alpha 检索核心的 Codex 独立回归，不冒充
   TOKEN_EVAL 要求的 Kimi/Grok 正式双端重跑
 
@@ -89,7 +89,7 @@
 
 ## 6. 安全回归
 
-本报告生成时的 14 项回归全部通过；开源整理后扩展为 18 项，本地 18/18 通过，
+本报告生成时的 14 项回归全部通过；开源整理后扩展为 19 项，本地 19/19 通过，
 跨平台结果以 CI 为准。覆盖：
 
 - scalar title 不再导致 search traceback；

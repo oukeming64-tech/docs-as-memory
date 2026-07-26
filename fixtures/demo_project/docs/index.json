@@ -1,6 +1,6 @@
 {
-  "schema_version": 1,
-  "generated_at": "2026-07-26T21:19:28+08:00",
+  "schema_version": 2,
+  "generated_at": "2026-07-26T21:33:59+08:00",
   "shard_root": "docs/shards",
   "shards_hash": "fe358df8e1ac4c208cf8bc424af0fffe09cd3602a9bb55bf0a7d7cdfb646f067",
   "l0_mode": "full",

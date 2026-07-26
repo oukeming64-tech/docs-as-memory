@@ -8,7 +8,8 @@ Docs as Memory 是 doc-memory 的**自有子系统**（技能包 `scripts/doc_me
 
 - 安装后 CLI：宿主项目根 `doc_memory.py`；未安装时可用技能包内置 CLI 配合 `--root`。
 - 规范：`specs/shard-format.md`、`specs/index-schema.md`。
-- Token 规则：`specs/TOKEN_EVAL.md`（唯一量尺 `est_tokens = ceil(utf8_bytes/4)`）。
+- Token 规则：`specs/TOKEN_EVAL.md`（唯一量尺
+  `est_tokens = ceil(normalized_utf8_bytes/4)`）。
 
 ## 命令速查
 

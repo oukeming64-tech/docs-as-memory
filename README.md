@@ -43,7 +43,8 @@ R Retrieve  →  V Verify  →  P Patch  →  S Seal
 | `affected` 人工维护映射 | 4 / 4 唯一命中 |
 | L0 上限 | ≤ 1,500 est_tokens |
 
-这里的 `est_tokens = ceil(UTF-8 bytes / 4)` 是可复现的上下文体量指标，
+这里的 `est_tokens = ceil(normalized UTF-8 bytes / 4)` 会先把 CRLF/CR
+换行规范成 LF，是可复现的上下文体量指标，
 不是 API 账单 token。工具并没有让本地文本搜索更快；它减少的是 agent 需要加载的
 文档量，并把“改哪篇、何时算同步完成”变成可验证流程。
 

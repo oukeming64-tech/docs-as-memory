@@ -27,3 +27,6 @@ First public alpha release.
 
 - Force UTF-8 CLI and installer output on Windows locales that otherwise default
   to legacy encodings such as cp1252.
+- Normalize Markdown line endings before hashing and sizing so a cross-platform
+  Git checkout does not falsely invalidate a committed index. This hash semantic
+  is recorded as `index.json` schema version 2.

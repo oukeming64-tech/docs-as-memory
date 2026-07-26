@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """token_measure — Docs as Memory token 评测量尺（零依赖）。
 
-唯一量尺：est_tokens = ceil(utf8_bytes / 4)（specs/TOKEN_EVAL.md §3）。
+唯一量尺：est_tokens = ceil(normalized_utf8_bytes / 4)（specs/TOKEN_EVAL.md §3）。
 
 用法：
   python3 tools/token_measure.py --runner kimi --task T-l0-budget
@@ -37,13 +37,14 @@ def est_tokens(nbytes: int) -> int:
     return math.ceil(nbytes / 4)
 
 
-def file_bytes(path: str) -> bytes:
+def normalized_file_bytes(path: str) -> bytes:
+    """Read UTF-8 text bytes with CRLF/CR normalized to LF."""
     with open(path, "rb") as f:
-        return f.read()
+        return f.read().replace(b"\r\n", b"\n").replace(b"\r", b"\n")
 
 
 def fixture_hash(fixture: str) -> str:
-    """TOKEN_EVAL §8：稳定排序后 sha256 串联 path + b'\\n' + file_bytes。"""
+    """TOKEN_EVAL §8：稳定排序后串联 path + LF-normalized bytes。"""
     shard_root = os.path.join(fixture, "docs", "shards")
     h = hashlib.sha256()
     for dirpath, _d, filenames in sorted(os.walk(shard_root)):
@@ -54,7 +55,7 @@ def fixture_hash(fixture: str) -> str:
             rel = os.path.relpath(full, fixture).replace(os.sep, "/")
             h.update(rel.encode("utf-8"))
             h.update(b"\n")
-            h.update(file_bytes(full))
+            h.update(normalized_file_bytes(full))
     return h.hexdigest()
 
 
@@ -130,19 +131,19 @@ def measure(task_id: str, runner: str) -> dict:
     baseline_mode = card.get("baseline_mode", "all_shards")
     if baseline_mode == "all_shards":
         for _rel, full in list_shard_files(FIXTURE):
-            baseline_bytes += len(file_bytes(full))
+            baseline_bytes += len(normalized_file_bytes(full))
 
     index_md = os.path.join(FIXTURE, "docs", "INDEX.md")
 
     if task_id == "T-l0-budget":
-        data = file_bytes(index_md)
+        data = normalized_file_bytes(index_md)
         loaded.append(("L0 INDEX.md", "docs/INDEX.md", len(data)))
         atlas_bytes = len(data)
         probe_ok = est_tokens(atlas_bytes) <= L0_BUDGET
         probe_answer = "BUDGET_OK" if probe_ok else f"OVER_BUDGET({est_tokens(atlas_bytes)})"
 
     elif task_id == "T-auth-locate":
-        data = file_bytes(index_md)
+        data = normalized_file_bytes(index_md)
         loaded.append(("L0 INDEX.md", "docs/INDEX.md", len(data)))
         atlas_bytes = len(data)
         out = run_cli(["search", card["query"]], FIXTURE, raw_log)
@@ -151,7 +152,7 @@ def measure(task_id: str, runner: str) -> dict:
         hits = shard_paths_from_output(out)[: int(card["top_k"])]
         body_all = ""
         for rel in hits:
-            b = file_bytes(os.path.join(FIXTURE, rel))
+            b = normalized_file_bytes(os.path.join(FIXTURE, rel))
             loaded.append(("shard", rel, len(b)))
             atlas_bytes += len(b)
             body_all += b.decode("utf-8", "replace")
@@ -168,7 +169,7 @@ def measure(task_id: str, runner: str) -> dict:
             hits = hits[: int(card["top_k"])]
         body_all = ""
         for rel in hits:
-            b = file_bytes(os.path.join(FIXTURE, rel))
+            b = normalized_file_bytes(os.path.join(FIXTURE, rel))
             loaded.append(("shard", rel, len(b)))
             atlas_bytes += len(b)
             body_all += b.decode("utf-8", "replace")
@@ -206,13 +207,13 @@ def render_report(r: dict) -> str:
         f"- date: {now}",
         f"- fixture_id: {r['fixture_id']}",
         f"- task_id: {r['task_id']}",
-        "- method: utf8_bytes/4",
+        "- method: normalized_utf8_bytes/4",
         "- mode: scripted_path",
         "",
         "## Absolute numbers",
-        f"- baseline_utf8_bytes: {r['baseline_bytes']}",
+        f"- baseline_normalized_utf8_bytes: {r['baseline_bytes']}",
         f"- baseline_est_tokens: {est_tokens(r['baseline_bytes']) if r['baseline_bytes'] else 'n/a'}",
-        f"- atlas_utf8_bytes: {r['atlas_bytes']}",
+        f"- atlas_normalized_utf8_bytes: {r['atlas_bytes']}",
         f"- atlas_est_tokens: {est_tokens(r['atlas_bytes'])}",
         f"- ratio: {format(r['ratio'], '.4f') if r['ratio'] is not None else 'n/a (T-l0-budget 无 baseline)'}",
         "",
@@ -220,7 +221,8 @@ def render_report(r: dict) -> str:
     ]
     for i, (label, rel, n) in enumerate(r["loaded"], 1):
         name = rel if rel else f"({label})"
-        lines.append(f"{i}. {name} — utf8_bytes={n}, est_tokens={est_tokens(n)}")
+        lines.append(
+            f"{i}. {name} — normalized_utf8_bytes={n}, est_tokens={est_tokens(n)}")
     lines += [
         "",
         "## CLI raw",
@@ -245,7 +247,8 @@ def render_report(r: dict) -> str:
 
 
 def main():
-    p = argparse.ArgumentParser(description="Docs as Memory token 量尺（method=utf8_bytes/4）")
+    p = argparse.ArgumentParser(
+        description="Docs as Memory token 量尺（method=normalized_utf8_bytes/4）")
     p.add_argument("--runner", required=True, choices=["kimi", "grok"])
     p.add_argument("--task", required=True)
     p.add_argument("--out", default=REPORTS_DIR)

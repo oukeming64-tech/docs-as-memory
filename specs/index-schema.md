@@ -1,8 +1,8 @@
-# index.json schema v1
+# index.json schema v2
 
 ```json
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "generated_at": "2026-07-26T12:00:00+08:00",
   "shard_root": "docs/shards",
   "shards_hash": "<sha256>",
@@ -34,10 +34,16 @@
 
 ## INDEX.md (L0)
 
-- Hard budget: `est_tokens = ceil(utf8_bytes/4) ≤ 1500`
+- Hard budget: `est_tokens = ceil(normalized_utf8_bytes/4) ≤ 1500`
 - Render modes, chosen deterministically: `full → compact → domains → minimal`
 - Cold entries (`history|cold|archive`) are summarized rather than expanded
 - `validate` treats an over-budget L0 as an error
+
+## Cross-platform hashing
+
+Before calculating `shards_hash` or per-shard `est_tokens`, Markdown CRLF and
+CR line endings are normalized to LF. A Git checkout moving between Windows,
+macOS and Linux therefore does not make an otherwise identical index stale.
 
 ## Atomic write
 

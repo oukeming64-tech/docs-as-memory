@@ -105,6 +105,15 @@ class DocMemoryTests(unittest.TestCase):
         self.assertEqual(diagnostic.returncode, 0, diagnostic.stderr)
         self.assertIn("不可作为当前事实", diagnostic.stderr)
 
+    def test_index_is_portable_across_line_endings(self):
+        self.init()
+        shard_root = self.root / "docs" / "shards"
+        for path in shard_root.rglob("*.md"):
+            data = path.read_bytes()
+            path.write_bytes(data.replace(b"\n", b"\r\n"))
+        completed = self.run_cli("validate")
+        self.assertEqual(completed.returncode, 0, completed.stderr)
+
     def test_scalar_title_is_rejected_without_search_crash(self):
         self.init()
         self.write_shard(
