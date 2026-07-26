@@ -415,6 +415,7 @@ class DocMemoryTests(unittest.TestCase):
         self.assertEqual(completed.returncode, 0, completed.stderr)
         payload = json.loads(completed.stdout)
         self.assertLessEqual(payload["ratio"], 0.30)
+        self.assertTrue(Path(payload["report"]).is_absolute())
         self.assertEqual(
             len(list(output.glob("codex-*-T-auth-locate.md"))), 1)
         self.assertEqual(before, {path: sha256(path) for path in protected})

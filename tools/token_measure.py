@@ -271,6 +271,17 @@ def render_report(r: dict) -> str:
     return "\n".join(lines)
 
 
+def display_report_path(path: str) -> str:
+    """Prefer repo-relative output, with a cross-volume-safe absolute fallback."""
+    absolute = os.path.abspath(path)
+    try:
+        if os.path.commonpath([absolute, REPO_ROOT]) == REPO_ROOT:
+            return os.path.relpath(absolute, REPO_ROOT).replace(os.sep, "/")
+    except ValueError:
+        pass
+    return absolute
+
+
 def main():
     p = argparse.ArgumentParser(
         description="Docs as Memory token 量尺（method=normalized_utf8_bytes/4）")
@@ -298,7 +309,7 @@ def main():
         f.write(report)
 
     print(json.dumps({
-        "report": os.path.relpath(fpath, REPO_ROOT),
+        "report": display_report_path(fpath),
         "fixture_id": r["fixture_id"],
         "baseline_est_tokens": est_tokens(r["baseline_bytes"]) if r["baseline_bytes"] else None,
         "atlas_est_tokens": est_tokens(r["atlas_bytes"]),

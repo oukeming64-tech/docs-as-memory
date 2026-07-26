@@ -20,6 +20,8 @@ All notable changes to this project will be documented here.
 - Run token evaluation against an isolated fixture copy so `reindex` does not
   dirty committed demo indexes.
 - Fail token evaluation immediately when a CLI subprocess exits non-zero.
+- Handle external report directories on a different Windows drive without
+  failing while formatting the result path.
 
 ## [0.1.0] - 2026-07-26
 
